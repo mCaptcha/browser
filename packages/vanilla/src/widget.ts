@@ -14,13 +14,22 @@ class Widget {
   receiver: Receiver;
 
   constructor(config: WidgetConfig) {
-    this.receiver = new Receiver(config, this.setToken);
-    this.receiver.listen();
-
-    const parentElement = document.getElementById(ID);
+    const parentElement = getParentElement();
     if (parentElement === null || parentElement === undefined) {
       throw new Error(`Element ${ID}'s parent element is undefined`);
     }
+
+    this.receiver = new Receiver(
+      config,
+      (val: string) => {
+        this.setToken(val)
+        const callback = parentElement.dataset?.callback
+        if (callback && typeof (window as any)[callback] === 'function') {
+          (window as any)[callback]()
+        }
+      },
+    );
+    this.receiver.listen();
 
     let label = <HTMLLabelElement | null>(
       document.getElementById(INPUT_LABEL_ID)
@@ -28,7 +37,8 @@ class Widget {
     if (label !== null) {
       label.style.display = "none";
     }
-    this.inputElement = <HTMLInputElement>document.getElementById(INPUT_NAME);
+    this.inputElement =
+      <HTMLInputElement>document.getElementById(INPUT_NAME) ?? document.createElement('input');
 
     this.inputElement.id = INPUT_NAME;
     this.inputElement.name = INPUT_NAME;
@@ -72,18 +82,39 @@ class Widget {
   setToken = (val: string) => (this.inputElement.value = val);
 }
 
-export const run = () => {
-  let label = <HTMLElement | null>document.getElementById(INPUT_LABEL_ID);
+const getParentElement = () => {
+  let parent: HTMLElement | null = document.getElementById(ID);
+  if (!parent) parent = <HTMLElement>document.getElementsByClassName(ID)[0] ?? null;
+  return parent;
+}
 
-  if (label !== null && label.dataset.mcaptcha_url) {
-    let config = {
-      widgetLink: new URL(label.dataset.mcaptcha_url),
-    };
-    new Widget(config);
+export const run = () => {
+  const parentElement = getParentElement();
+  if (parentElement) {
+    if (parentElement.dataset?.instance_url && parentElement.dataset?.sitekey) {
+      new Widget({
+        siteKey: {
+          instanceUrl: new URL(parentElement.dataset.instance_url),
+          key: parentElement.dataset.sitekey,
+        }
+      });
+    } else if (parentElement.dataset.mcaptcha_url) {
+      new Widget({
+        widgetLink: new URL(parentElement.dataset.mcaptcha_url),
+      });
+    }
   } else {
-    throw new Error(
-      `Couldn't find "mcaptcha_url" dataset in element (ID=${INPUT_LABEL_ID})`
-    );
+    let label = <HTMLElement | null>document.getElementById(INPUT_LABEL_ID);
+
+    if (label !== null && label.dataset.mcaptcha_url) {
+      new Widget({
+        widgetLink: new URL(label.dataset.mcaptcha_url),
+      });
+    } else {
+      throw new Error(
+        `Couldn't find "mcaptcha_url" dataset in element (ID=${INPUT_LABEL_ID})`
+      );
+    }
   }
 };
 

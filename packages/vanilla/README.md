@@ -12,24 +12,21 @@
 
 ## Usage
 
-Add this snippet to the form which requires to be protected using
-mCaptcha
+Add this snippet to the form which requires to be protected using mCaptcha
 
 ```html
-<label
-  data-mcaptcha_url="{{paste your widget link here}}"
-  for="mcaptcha__token"
-  id="mcaptcha__token-label"
->
-  mCaptcha authorization token.
-  <a
-	href="https://mcaptcha.org/docs/user-manual/how-to-mcaptcha-without-js/"
-	>Instructions</a
-  >.
-  <input type="text" name="mcaptcha__token" id="mcaptcha__token" />
-</label>
-<div id="mcaptcha__widget-container"></div>
-<script src="https://unpkg.com/@mcaptcha/vanilla-glue@0.1.0-rc2/dist/index.js"/>
+<form>
+...
+<div
+  class="mcaptcha" 
+  data-sitekey="{{ siteKey }}"
+  data-instance_url="{{ mcaptchaUrl | 'http://localhost:7000/') }}"
+  data-callback="{{ callbackFunctionName | optional }}">
+</div>
+...
+</form>
+<script>const callbackFunctionName = () => {}</script>
+<script src="https://unpkg.com/@mcaptcha/vanilla-glue@0.2.0-rc2/dist/index.js" defer async />
 ```
 
 ## Example
