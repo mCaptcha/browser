@@ -45,7 +45,7 @@ afterEach(() => {
   } catch {}
 });
 
-it("Widget fails when mcaptcha__widget-container div is absent", () => {
+it("Widget fails when mcaptcha div is absent", () => {
   document.getElementById(ID)?.remove();
   try {
     new Widget({ widgetLink: new URL(widgetLink) });

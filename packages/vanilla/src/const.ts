@@ -4,6 +4,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-License-Identifier: MIT
 
-export const INPUT_NAME = "mcaptcha__token";
-export const INPUT_LABEL_ID = "mcaptcha__token-label";
-export const ID = "mcaptcha__widget-container";
+export const ID = "mcaptcha";
+export const INPUT_NAME = "mcaptcha-response";
+export const INPUT_LABEL_ID = "mcaptcha-label";
